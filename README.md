@@ -58,7 +58,7 @@ Generally you can globally define headers and http body in the main device confi
     - `url` \<URL\> **required**: The URL to query when this input is selected.
     - `type` \<number\> **optional** \(Default: **3 (HDMI)**\): The input type as defined [here](https://developers.homebridge.io/#/characteristic/InputSourceType)
 
-- `method` \<string\> **optional** \(Default: **"TV01"**\): The HTTP method to be used for **all** requests.
+- `method` \<string\> **optional** \(Default: **"GET"**\): The HTTP method to be used for **all** requests.
 - `headers` \<object\> **optional**: Key-Value object for HTTP headers to be included in every request.
 
 - `serialNumber` \<string\> **optional** \(Default: **"TV01"**\): Defines a custom serial number shown in the home app.
