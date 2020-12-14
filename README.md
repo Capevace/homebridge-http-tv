@@ -1,7 +1,7 @@
 <p align="center"><img alt="halbert logo" src="/halbert.jpg?raw=true"></p>
 <h1 align="center">Homebridge HTTP TV Plugin</h1>
 <h4 align="center">
-  A Homebridge plugin to let you control your TV (or a bridge server) using HTTP, kinda like homebridge-http-switch but for TVs
+  A Homebridge plugin to let you control your TV (or a bridge server) using HTTP
 </h4>
 <p align="center">
   <img alt="license" src="https://img.shields.io/github/license/capevace/homebridge-http-tv">
@@ -16,6 +16,7 @@
 - Exposes a HomeKit TV accessory
 - Characteristics changes trigger HTTP requests to user-defined URLs
 - Every request customizable with HTTP method, headers and body
+- Kind of like [homebridge-http-switch](https://github.com/Supereg/homebridge-http-switch) but for TVs
 
 ## Installation
 [Homebridge](https://github.com/homebridge/homebridge) should be installed. Then run the following to install `homebridge-http-tv`.
