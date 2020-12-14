@@ -1,4 +1,4 @@
-<p align="center"><img alt="halbert logo" src="/halbert.jpg?raw=true"></p>
+<p align="center"><img alt="homebridge logo" src="https://raw.githubusercontent.com/homebridge/branding/master/logos/homebridge-wordmark-logo-vertical.png"></p>
 <h1 align="center">Homebridge HTTP TV Plugin</h1>
 <h4 align="center">
   A Homebridge plugin to let you control your TV (or a bridge server) using HTTP
