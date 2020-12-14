@@ -25,7 +25,7 @@ Add the platform to your Homebridge config.json file. You can find your file loc
 		{
 			"platform": "http-tv",
 			"devices": {
-				// device config here, see below
+				"device config here, see below": ""
 			}
 		}
 	]
@@ -38,7 +38,7 @@ You're good to go now!
 You can use the visual config editor in [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x). However for more detailed configuration you may have to edit the config.json file directly. 
 
 ### A note on HTTP requests
-Generally you can globally define headers and http body in the main device config. However, every object marked \<HTTPRequest\> can include `method`, `headers`, and `body` properties, that only get used for *that* HTTP request. See [example below](#example).
+Generally you can globally define headers and http body in the main device config. However, every object marked **\<HTTPRequest\>** can include `method`, `headers`, and `body` properties, that only get used for *that* HTTP request. See [example below](#example).
 
 - `name` \<string\> **required**: Defines the name which is later displayed in HomeKit
 
@@ -60,5 +60,7 @@ Generally you can globally define headers and http body in the main device confi
 - `model` \<string\> **optional** \(Default: **"TV"**\): Defines a custom model name shown in the home app.
 - `manufacturer` \<string\> **optional** \(Default: **"Mateffy"**\): Defines a custom manufacturer name shown in the home app.
 
-
-
+#### HTTPRequest: The HTTP request object
+- `method` \<string\> **optional** \(Default: **"TV01"**\): The HTTP method to be used for **all** requests.
+- `headers` \<object\> **optional**: Key-Value object for HTTP headers to be included in every request.
+- `body` \<string\> **optional**: The HTTP body
