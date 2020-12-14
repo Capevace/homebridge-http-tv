@@ -44,7 +44,7 @@ You're good to go now!
 You can use the visual config editor in [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x). However for more detailed configuration you may have to edit the config.json file directly. 
 
 ### A note on HTTP requests
-Generally you can globally define headers and http body in the main device config. However, every object marked **\<HTTPRequest\>** can include `method`, `headers`, and `body` properties, that only get used for *that* HTTP request. See [example below](#example).
+Generally you can globally define headers and http body in the main device config. However, every object marked **\<HTTPRequest\>** can include `method`, `headers`, and `body` properties, that only get used for *that* HTTP request. See [example below](#config-example).
 
 ### Config Properties
 - `name` \<string\> **required**: Defines the name which is later displayed in HomeKit
