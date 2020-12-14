@@ -118,3 +118,7 @@ Generally you can globally define headers and http body in the main device confi
     ]
 }
 ```
+
+## Changelog
+#### 1.0.1
+- Fixed documentation in README
