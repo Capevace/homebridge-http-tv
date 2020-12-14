@@ -1,7 +1,7 @@
 {
   "displayName": "HTTP TV",
   "name": "homebridge-http-tv",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Homebridge plugin to let you control your TV (or a bridge server) using HTTP",
   "license": "Apache-2.0",
   "repository": {
