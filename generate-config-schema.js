@@ -1,0 +1,112 @@
+function httpProperties() {
+	return {
+		method: {
+			title: 'HTTP Method',
+			type: 'string',
+			default: 'POST',
+			oneOf: [
+				{ title: 'GET', enum: ['GET'] },
+				{ title: 'POST', enum: ['POST'] },
+				{ title: 'PATCH', enum: ['PATCH'] },
+				{ title: 'PUT', enum: ['PUT'] },
+				{ title: 'OPTIONS', enum: ['OPTIONS'] },
+				{ title: 'DELETE', enum: ['DELETE'] },
+				{ title: 'TRACE', enum: ['TRACE'] },
+				{ title: 'HEAD', enum: ['HEAD'] },
+				{ title: 'CONNECT', enum: ['CONNECT'] }
+			],
+		}
+	}
+}
+
+const json = {
+	pluginAlias: 'http-tv',
+	pluginType: 'platform',
+	singular: true,
+	schema: {
+		'devices': {
+			type: 'array',
+			title: 'Devices',
+			items: {
+		type: 'object',
+		properties: {
+			name: {
+				title: 'Name',
+				type: 'string',
+				required: true,
+				default: 'My HTTP TV',
+			},
+			serialNumber: {
+				title: 'Serial number',
+				type: 'string',
+				required: true,
+				default: 'my-http-tv-1',
+			},
+
+			...httpProperties(),
+
+			power: {
+				title: 'Power',
+				type: 'object',
+				required: false,
+				properties: {
+					onUrl: {
+						title: 'Off URL',
+						type: 'string',
+						required: true,
+					},
+					offUrl: {
+						title: 'Off URL',
+						type: 'string',
+						required: true,
+					}
+				},
+			},
+
+			sources: {
+				title: 'Input Sources',
+				type: 'array',
+				items: {
+					title: 'Input Source',
+					type: 'object',
+					properties: {
+						name: {
+							title: 'Name',
+							type: 'string',
+							required: true
+						},
+						url: {
+							title: 'URL',
+							type: 'string',
+							required: true
+						},
+						type: {
+							title: 'Input Type',
+							type: 'number',
+							required: false,
+							default: 3
+						}
+					}
+				}
+			},
+
+			model: {
+				title: 'Model',
+				type: 'string',
+				required: false,
+				default: 'HTTP TV',
+			},
+			manufacturer: {
+				title: 'Manufacturer',
+				type: 'string',
+				required: false,
+				default: 'Lukas Mateffy',
+			},
+		},
+	},
+		}
+	}
+};
+
+const fs = require('fs');
+fs.writeFileSync('config.schema.json', JSON.stringify(json, null, 2));

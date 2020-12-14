@@ -1,6 +1,12 @@
 import fetch from 'node-fetch';
 
-import { Service, PlatformAccessory, CharacteristicValue, CharacteristicSetCallback, CharacteristicGetCallback } from 'homebridge';
+import {
+	Service,
+	PlatformAccessory,
+	CharacteristicValue,
+	CharacteristicSetCallback,
+	CharacteristicGetCallback,
+} from 'homebridge';
 
 import { HTTPTVPlatform } from './platform';
 
@@ -9,7 +15,7 @@ import { HTTPTVPlatform } from './platform';
  * An instance of this class is created for each accessory your platform registers
  * Each accessory may expose multiple services of different service types.
  */
- export class HTTPTVAccessory {
+export class HTTPTVAccessory {
 	private tvService: Service;
 
 	/**
@@ -18,85 +24,123 @@ import { HTTPTVPlatform } from './platform';
 	 */
 	private states = {
 		Active: false,
-		ActiveIdentifier: 1
+		ActiveIdentifier: 1,
 	};
 
 	constructor(
 		private readonly platform: HTTPTVPlatform,
-		private readonly accessory: PlatformAccessory,
+		private readonly accessory: PlatformAccessory
 	) {
 		const Characteristic = this.platform.Characteristic;
 
-		 // set accessory information
-		this.accessory.getService(this.platform.Service.AccessoryInformation)!
-			.setCharacteristic(Characteristic.Manufacturer, accessory.context.device.manufacturer || 'Mateffy')
-			.setCharacteristic(Characteristic.Model, accessory.context.device.model || 'TV')
-			.setCharacteristic(Characteristic.SerialNumber, accessory.context.device.serialNumber);
+		// set accessory information
+		this.accessory
+			.getService(this.platform.Service.AccessoryInformation)!
+			.setCharacteristic(
+				Characteristic.Manufacturer,
+				accessory.context.device.manufacturer || 'Mateffy'
+			)
+			.setCharacteristic(
+				Characteristic.Model,
+				accessory.context.device.model || 'TV'
+			)
+			.setCharacteristic(
+				Characteristic.SerialNumber,
+				accessory.context.device.serialNumber
+			);
 
 		// get the LightBulb service if it exists, otherwise create a new LightBulb service
 		// you can create multiple services for each accessory
-		this.tvService = this.accessory.getService(this.platform.Service.Television) || this.accessory.addService(this.platform.Service.Television);
+		this.tvService =
+			this.accessory.getService(this.platform.Service.Television) ||
+			this.accessory.addService(this.platform.Service.Television);
 
 		// set the service name, this is what is displayed as the default name on the Home app
 		// in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
 		this.tvService
-			.setCharacteristic(Characteristic.Name, accessory.context.device.name || 'TV')
-			.setCharacteristic(Characteristic.ConfiguredName, accessory.context.device.name || 'TV')
+			.setCharacteristic(
+				Characteristic.Name,
+				accessory.context.device.name || 'TV'
+			)
+			.setCharacteristic(
+				Characteristic.ConfiguredName,
+				accessory.context.device.name || 'TV'
+			)
 			.setCharacteristic(
 				Characteristic.SleepDiscoveryMode,
 				Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
 			);
 
-		this.tvService
-			.setCharacteristic(Characteristic.ActiveIdentifier, this.states.ActiveIdentifier);
+		this.tvService.setCharacteristic(
+			Characteristic.ActiveIdentifier,
+			this.states.ActiveIdentifier
+		);
 
 		// each service must implement at-minimum the "required characteristics" for the given service type
 		// see https://developers.homebridge.io/#/service/Lightbulb
 
 		// register handlers for the On/Off Characteristic
-		this.tvService.getCharacteristic(Characteristic.Active)
+		this.tvService
+			.getCharacteristic(Characteristic.Active)
 			.on('set', this.setActive.bind(this))
 			.on('get', this.getActive.bind(this));
 
-		this.tvService.getCharacteristic(Characteristic.ActiveIdentifier)
+		this.tvService
+			.getCharacteristic(Characteristic.ActiveIdentifier)
 			.on('set', this.setActiveIdentifier.bind(this))
 			.on('get', this.getActiveIdentifier.bind(this));
 
-		// register handlers for the Brightness Characteristic
-		this.tvService.getCharacteristic(Characteristic.Brightness)
-			.on('set', cb => cb());       // SET - bind to the 'setBrightness` method below
-
+		// Register inputs
 		for (const i in accessory.context.device.sources) {
 			const source = accessory.context.device.sources[i];
 
-			const inputService = this.accessory.getService(source.name) 
-				|| this.accessory.addService(this.platform.Service.InputSource, source.name, `${accessory.context.device.serialNumber}-${source.name}`);
-			
+			const inputService =
+				this.accessory.getService(source.name) ||
+				this.accessory.addService(
+					this.platform.Service.InputSource,
+					source.name,
+					`${accessory.context.device.serialNumber}-${source.name}`
+				);
+
 			inputService
 				.setCharacteristic(Characteristic.Identifier, parseInt(i) + 1)
 				.setCharacteristic(Characteristic.ConfiguredName, source.name)
-				.setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
-				.setCharacteristic(Characteristic.InputSourceType, source.type || Characteristic.InputSourceType.HDMI);
+				.setCharacteristic(
+					Characteristic.IsConfigured,
+					Characteristic.IsConfigured.CONFIGURED
+				)
+				.setCharacteristic(
+					Characteristic.InputSourceType,
+					source.type || Characteristic.InputSourceType.HDMI
+				);
 
 			this.tvService.addLinkedService(inputService);
 		}
 	}
 
-	async setActive(value: CharacteristicValue, callback: CharacteristicSetCallback) {
+	async setActive(
+		value: CharacteristicValue,
+		callback: CharacteristicSetCallback
+	) {
 		this.platform.log.debug('Set Characteristic Active ->', value);
 
 		try {
-			const url = value as boolean
+			const url = (value as boolean)
 				? this.accessory.context.device.power?.onUrl
 				: this.accessory.context.device.power?.offUrl;
 
 			if (!url) {
-				throw new Error(`TV ${this.accessory.context.device.name} does not have an ${value as boolean ? 'on' : 'off'}Url`);
+				throw new Error(
+					`TV ${
+						this.accessory.context.device.name
+					} does not have an ${(value as boolean) ? 'on' : 'off'}Url`
+				);
 			}
 
 			await this.httpRequest(
 				url,
-				this.accessory.context.device.power?.method || this.accessory.context.device.method,
+				this.accessory.context.device.power?.method ||
+					this.accessory.context.device.method,
 				{
 					...(this.accessory.context.device.headers || {}),
 					...(this.accessory.context.device.power?.headers || {}),
@@ -113,7 +157,6 @@ import { HTTPTVPlatform } from './platform';
 	}
 
 	getActive(callback: CharacteristicGetCallback) {
-
 		// implement your own code to check if the device is on
 		const isOn = this.states.Active;
 		this.platform.log.debug('Get Characteristic Active ->', isOn);
@@ -124,8 +167,14 @@ import { HTTPTVPlatform } from './platform';
 		callback(null, isOn);
 	}
 
-	async setActiveIdentifier(value: CharacteristicValue, callback: CharacteristicSetCallback) {
-		this.platform.log.debug('Set Characteristic ActiveIdentifier -> ', value);
+	async setActiveIdentifier(
+		value: CharacteristicValue,
+		callback: CharacteristicSetCallback
+	) {
+		this.platform.log.debug(
+			'Set Characteristic ActiveIdentifier -> ',
+			value
+		);
 
 		try {
 			const sourceIndex = (value as number) - 1;
@@ -133,7 +182,9 @@ import { HTTPTVPlatform } from './platform';
 			const source = this.accessory.context.device.sources[sourceIndex];
 
 			if (!source) {
-				throw new Error(`Source with Identifier ${value} does not exist in configuration`);
+				throw new Error(
+					`Source with Identifier ${value} does not exist in configuration`
+				);
 			}
 
 			await this.httpRequest(
@@ -158,7 +209,10 @@ import { HTTPTVPlatform } from './platform';
 		// implement your own code to check if the device is on
 		const activeIdentifier = this.states.ActiveIdentifier;
 
-		this.platform.log.debug('Get Characteristic ActiveIdentifier ->', activeIdentifier);
+		this.platform.log.debug(
+			'Get Characteristic ActiveIdentifier ->',
+			activeIdentifier
+		);
 
 		// you must call the callback function
 		// the first argument should be null if there were no errors
@@ -166,18 +220,20 @@ import { HTTPTVPlatform } from './platform';
 		callback(null, activeIdentifier);
 	}
 
-	async httpRequest(url: string, method: string = 'GET', headers?: { [key: string]: string; }, body?: string) {
-		const response = await fetch(
-			url, 
-			{ 
-				method,
-				headers,
-				body
-			}
-		);
+	async httpRequest(
+		url: string,
+		method = 'GET',
+		headers?: { [key: string]: string },
+		body?: string
+	) {
+		const response = await fetch(url, {
+			method,
+			headers,
+			body,
+		});
 
 		if (!response.ok) {
-			throw new Error(await response.text());
+			throw new Error(`${response.status}: ${await response.text()}`);
 		}
 
 		this.platform.log.debug('Update HTTP request: OK');

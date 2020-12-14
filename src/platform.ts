@@ -54,81 +54,100 @@ export class HTTPTVPlatform implements DynamicPlatformPlugin {
 	 * must not be registered again to prevent "duplicate UUID" errors.
 	 */
 	discoverDevices() {
-		const vieraCommandURL = (url) => url + '/nrc/control_0';
-		const vieraRenderURL = (url) => url + '/dmr/control_0';
-		
-		function vieraRequest(type: 'command' | 'render', action: string, command: string) {
-			const vieraCommandURN = 'panasonic-com:service:p00NetworkControl:1';
-			const vieraRenderURN = 'schemas-upnp-org:service:RenderingControl:1';
-			
+		// const vieraCommandURL = (url) => url + '/nrc/control_0';
+		// const vieraRenderURL = (url) => url + '/dmr/control_0';
 
-			const urn = type === 'command' ? vieraCommandURN : vieraRenderURN;
-			const body = "\
-				<?xml version='1.0' encoding='utf-8'?> \
-				<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'> \
-					<s:Body> \
-						<u:"+action+" xmlns:u='urn:"+urn+"'> \
-							"+command+" \
-						</u:"+action+"> \
-					</s:Body> \
-				</s:Envelope>";
+// 		function vieraRequest(
+// 			type: 'command' | 'render',
+// 			action: string,
+// 			command: string
+// 		) {
+// 			const vieraCommandURN = 'panasonic-com:service:p00NetworkControl:1';
+// 			const vieraRenderURN =
+// 				'schemas-upnp-org:service:RenderingControl:1';
 
-			return {
-				body,
-				headers: {
-					'Content-Length': body.length,
-					'Content-Type': 'text/xml; charset="utf-8"',
-					'SOAPACTION': '"urn:' + urn + '#' + action + '"'
-			    }
-			}
-		}
+// 			const urn = type === 'command' ? vieraCommandURN : vieraRenderURN;
+// 			const body = `<?xml version='1.0' encoding='utf-8'?> 
+// <s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'> 
+// 	<s:Body> 
+// 		<u:" +
+// 				action +
+// 				" xmlns:u='urn:" +
+// 				urn +
+// 				"'> 
+// 			" +
+// 				command +
+// 				' 
+// 		</u:' +
+// 				action +
+// 				'> 
+// 	</s:Body> 
+// </s:Envelope>`;
+
+// 			return {
+// 				method: 'POST',
+// 				body,
+// 				headers: {
+// 					'Content-Length': body.length,
+// 					'Content-Type': 'text/xml; charset="utf-8"',
+// 					SOAPACTION: '"urn:' + urn + '#' + action + '"',
+// 				},
+// 			};
+// 		}
 		// https://developers.homebridge.io/#/characteristic/InputSourceType
 
-		const vieraTVPower = {
-			onUrl: vieraCommandURL('http://192.168.0.???'),
-			...vieraRequest('command', 'X_SendKey', '<X_KeyEvent>NRC_POWER-ONOFF</X_KeyEvent>')
-		};
+		// const vieraTVPower = {
+		// 	onUrl: vieraCommandURL('http://192.168.178.38:55000'),
+		// 	offUrl: vieraCommandURL('http://192.168.178.38:55000'),
+		// 	...vieraRequest(
+		// 		'command',
+		// 		'X_SendKey',
+		// 		'<X_KeyEvent>NRC_POWER-ONOFF</X_KeyEvent>'
+		// 	),
+		// };
 
-		const devices = [
-			{
-				name: 'Television 2',
-				serialNumber: 'TV1',
-				model: 'GreatTVV2',
-				manufacturer: 'Mateffy',
-				method: 'POST',
-				headers: {
-					'Auth': 'Here goes some basic auth'
-				},
-				power: {
-					onUrl: 'https://3d2665ce9547e1605543d49df206e510.m.pipedream.net/tv/power/on',
-					offUrl: 'https://3d2665ce9547e1605543d49df206e510.m.pipedream.net/tv/power/off',
-					method: 'POST',
-					...vieraRequest('command', 'X_SendKey', '<X_KeyEvent>NRC_POWER-ONOFF</X_KeyEvent>')
-				},
-				sources: [
-					{
-						name: 'HDMI1',
-						type: 3,
-						url: 'https://3d2665ce9547e1605543d49df206e510.m.pipedream.net/tv/channel/hdmi1',
-						method: 'PATCH',
-						body: 'some body in here instead'
-					},
-					{
-						name: 'Netflix',
-						type: 10,
-						url: 'https://3d2665ce9547e1605543d49df206e510.m.pipedream.net/tv/channel/netflix'
-					},
-				],
-			},
-		];
+		// const devices = [
+		// 	{
+		// 		name: 'Television 2',
+		// 		serialNumber: 'TV3',
+		// 		model: 'GreatTVV2',
+		// 		manufacturer: 'Mateffy',
+		// 		method: 'POST',
+		// 		headers: {
+		// 			Auth: 'Here goes some basic auth',
+		// 		},
+		// 		power: vieraTVPower,
+		// 		sources: [
+		// 			{
+		// 				name: 'HDMI1',
+		// 				type: 3,
+		// 				url:
+		// 					'https://3d2665ce9547e1605543d49df206e510.m.pipedream.net/tv/channel/hdmi1',
+		// 				method: 'PATCH',
+		// 				body: 'some body in here instead',
+		// 			},
+		// 			{
+		// 				name: 'Netflix',
+		// 				type: 10,
+		// 				url:
+		// 					'https://3d2665ce9547e1605543d49df206e510.m.pipedream.net/tv/channel/netflix',
+		// 			},
+		// 		],
+		// 	},
+		// ];
 
-		let foundUUIDs: string[] = [];
+		interface DeviceConfig {
+			serialNumber: string;
+			name: string;
+		}
+
+		const foundUUIDs: string[] = [];
 
 		// loop over the discovered devices and register each one if it has not already been registered
-		for (const device of devices) {
+		for (const device of this.config.devices as DeviceConfig[]) {
 			if (!device.serialNumber) {
 				this.log.error(
-					`Could not initialize HTTP TV, missing serial number`,
+					'Could not initialize HTTP TV, missing serial number',
 					device
 				);
 				continue;
@@ -190,10 +209,17 @@ export class HTTPTVPlatform implements DynamicPlatformPlugin {
 			// Get accessories that we havent found the UUID of (which means they were not configured anymore),
 			// and delete them.
 			this.accessories
-				.filter(accessory => !foundUUIDs.includes(accessory.UUID))
-				.forEach(accessory => {
-					this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
-          			this.log.info('Removing existing accessory from cache:', accessory.displayName);
+				.filter((accessory) => !foundUUIDs.includes(accessory.UUID))
+				.forEach((accessory) => {
+					this.api.unregisterPlatformAccessories(
+						PLUGIN_NAME,
+						PLATFORM_NAME,
+						[accessory]
+					);
+					this.log.info(
+						'Removing existing accessory from cache:',
+						accessory.displayName
+					);
 				});
 		}
 	}

@@ -1,7 +1,7 @@
 import { API } from 'homebridge';
 
 import { PLATFORM_NAME } from './settings';
-import { HTTPTVPlatform } from './platform'; 
+import { HTTPTVPlatform } from './platform';
 
 /**
  * This method registers the platform with Homebridge
